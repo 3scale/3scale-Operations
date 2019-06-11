@@ -1,6 +1,6 @@
 = 3scale Operations
 
-The repository contains documentation and tools to help in the Installation, Operation,
+This repository contains documentation and tools to help in the Installation, Operation,
 Ongoing Maintenance and Upgrade of an instance of 3scale API Management, whether you are
 deploying it in a Public cloud, Private cloud or on-premises.
 
