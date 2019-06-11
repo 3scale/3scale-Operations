@@ -2,10 +2,10 @@
 
 == Overview
 
-This section intends to provide an Operator of a 3scale installation the information they need to:
+This section provides an Operator of a 3scale installation the information they need for:
 
-* Setup the backup procedures for persistent data
-* Perform a restore from a backup of the persistent data
+* <<Backup Procedures>> to backup persistent data
+* <<Restore Procedures>> to restore from a backup of the persistent data
 
 Such that, in the case of a failure, they can restore 3scale to correctly running operational state and continue
 operating.
