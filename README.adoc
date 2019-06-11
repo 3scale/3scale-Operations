@@ -12,5 +12,5 @@ specific platforms it runs on.
 Documents in this section describe typical Operations procedures for "day 2 Operations" once you have
 your 3scale installation up and running.
 
-* file://docs/day-2-operations/Backups.adoc[Backup & Restore procedures]
+* link:docs/day-2-operations/Backups.adoc[Backup & Restore procedures]
  
