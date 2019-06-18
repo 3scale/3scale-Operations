@@ -1,0 +1,16 @@
+= 3scale Operations
+
+This repository contains documentation and tools to help in the Installation, Operation,
+Ongoing Maintenance and Upgrade of an instance of 3scale API Management, whether you are
+deploying it in a Public cloud, Private cloud or on-premises.
+
+Sections will be added over time and updated when relevant changes are made in 3scale or
+specific platforms it runs on.
+
+== Day-2 Operations
+
+Documents in this section describe typical Operations procedures for "day 2 Operations" once you have
+your 3scale installation up and running.
+
+* link:docs/day-2-operations/Backups.adoc[Backup & Restore procedures]
+ 
