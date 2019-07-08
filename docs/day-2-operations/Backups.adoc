@@ -92,7 +92,7 @@ Execute MySQL Backup Command
 
 [source,bash]
 ----
-oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysqldump --single-transaction -hsystem-mysql -uroot system' | gzip &gt; system-mysql-backup.gz
+oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysqldump --single-transaction -hsystem-mysql -uroot system' | gzip > system-mysql-backup.gz
 ----
 
 === `system-storage`
@@ -110,7 +110,7 @@ Execute Postgres Backup Command
 
 [source,bash]
 ----
-oc rsh $(oc get pods -l 'deploymentConfig=zync-database' -o json | jq '.items[0].metadata.name' -r) bash -c 'pg_dumpall -c --if-exists' | gzip &gt; zync-database-backup.gz
+oc rsh $(oc get pods -l 'deploymentConfig=zync-database' -o json | jq '.items[0].metadata.name' -r) bash -c 'pg_dumpall -c --if-exists' | gzip > zync-database-backup.gz
 ----
 
 === `backend-redis`
@@ -139,7 +139,7 @@ Copy the MySQL dump to the system-mysql pod
 
 [source,bash]
 ----
-cp ./system-mysql-backup.gz $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq '.items[0].metadata.name' -r):/var/lib/mysql
+oc cp ./system-mysql-backup.gz $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq '.items[0].metadata.name' -r):/var/lib/mysql
 ----
 
 Decompress the Backup File
@@ -153,7 +153,7 @@ Restore the MySQL DB Backup file
 
 [source,bash]
 ----
-oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysql -R -hsystem-mysql -uroot system &lt; ${HOME}/system-mysql-backup'
+oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysql -hsystem-mysql -uroot system < ${HOME}/system-mysql-backup'
 ----
 
 === `system-storage`
