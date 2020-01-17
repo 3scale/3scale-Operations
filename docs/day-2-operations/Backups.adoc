@@ -43,13 +43,13 @@ persistent.
 * `backend-redis`: Redis database (`backend-redis-storage`)
 * `system-redis`: Redis database (`system-redis-storage`)
 
-=== `system-mysql`
+=== `system-mysql` OR `system-database` OR external Oracle database
 
 This is a relational database for storing the information about users, accounts, APIs, plans etc in the 3scale Admin
 Console.
 
 A subset of this information related to Services is synchronized to the `Backend` component and stored in
-`backend-redis`. `system-mysql` is the source of truth for this information.
+`backend-redis`. `system-mysql` OR `system-database` OR external Oracle database is the source of truth for this information.
 
 === `system-storage`
 
@@ -94,6 +94,19 @@ Execute MySQL Backup Command
 ----
 oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysqldump --single-transaction -hsystem-mysql -uroot system' | gzip > system-mysql-backup.gz
 ----
+
+=== `system-database`
+
+Execute PostgreSQL Backup Command
+
+[source,bash]
+----
+oc rsh $(oc get pods -l 'deploymentConfig=system-database' -o json | jq '.items[0].metadata.name' -r) bash -c 'pg_dumpall -c --if-exists' | gzip > system-postgres-backup.gz
+----
+
+=== External Oracle database
+
+Follow Oracle Database Backup and Recovery Quick Start Guide: https://docs.oracle.com/cd/B19306_01/backup.102/b14193/toc.htm
 
 === `system-storage`
 
@@ -156,13 +169,27 @@ Restore the MySQL DB Backup file
 oc rsh $(oc get pods -l 'deploymentConfig=system-mysql' -o json | jq -r '.items[0].metadata.name') bash -c 'export MYSQL_PWD=${MYSQL_ROOT_PASSWORD}; mysql -hsystem-mysql -uroot system < ${HOME}/system-mysql-backup'
 ----
 
-=== `system-storage`
+=== `system-database`
 
-Restore the Backup file to system-storage
+Copy the PostgreSQL Database dump to the system-database pod
 
 [source,bash]
 ----
-oc rsync ./local/dir $(oc get pods -l 'deploymentConfig=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system
+oc cp ./system-postgres-backup.gz $(oc get pods -l 'deploymentConfig=system-database' -o json | jq '.items[0].metadata.name' -r):/var/lib/pgsql/
+----
+
+Decompress the Backup File
+
+[source,bash]
+----
+oc rsh $(oc get pods -l 'deploymentConfig=system-database' -o json | jq -r '.items[0].metadata.name') bash -c 'gzip -d ${HOME}/system-postgres-backup.gz'
+----
+
+Restore the PostgreSQL DB Backup file
+
+[source,bash]
+----
+oc rsh $(oc get pods -l 'deploymentConfig=system-database' -o json | jq -r '.items[0].metadata.name') bash -c 'psql -f ${HOME}/system-postgres-backup.gz'
 ----
 
 === `zync-database`
