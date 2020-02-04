@@ -192,6 +192,16 @@ Restore the PostgreSQL DB Backup file
 oc rsh $(oc get pods -l 'deploymentConfig=system-database' -o json | jq -r '.items[0].metadata.name') bash -c 'psql -f ${HOME}/system-postgres-backup.gz'
 ----
 
+=== `system-storage`
+
+Restore the archived files from a different location.
+
+[source,bash]
+----
+oc rsync ./local/dir $(oc get pods -l 'deploymentConfig=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system --delete=true
+----
+
+
 === `zync-database`
 
 Copy the Zync Database dump to the zync-database pod
