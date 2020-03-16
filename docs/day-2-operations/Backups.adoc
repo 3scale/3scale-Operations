@@ -144,7 +144,98 @@ Backup the dump.rb file from redis
 oc cp $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].metadata.name' -r):/var/lib/redis/data/dump.rdb ./system-redis-dump.rdb
 ----
 
+=== `Secrets`
+[source,bash]
+----
+oc get secrets system-smtp -o json --export > system-smtp.json
+oc get secrets system-seed -o json --export > system-seed.json
+oc get secrets system-database -o json --export > system-database.json
+oc get secrets backend-internal-api -o json --export > backend-internal-api.json
+oc get secrets system-events-hook -o json --export > system-events-hook.json
+oc get secrets system-app -o json --export > system-app.json
+oc get secrets system-recaptcha -o json --export > system-recaptcha.json
+oc get secrets system-redis -o json --export > system-redis.json
+oc get secrets zync -o json --export > zync.json
+oc get secrets system-master-apicast -o json --export > system-master-apicast.json
+----
+
+=== `ConfigMaps`
+[source,bash]
+----
+oc get configmaps system-environment -o json --export > system-environment.json
+oc get configmaps apicast-environment -o json --export > apicast-environment.json
+----
+
 == Restore Procedures
+
+=== `Template-based deployment`
+
+[source,bash]
+
+Template parameters will be read from copied secrets and configmaps.
+
+----
+oc new-app --file /opt/amp/templates/amp.yml \
+    --param APP_LABEL=$(cat system-environment.json | jq -r '.metadata.labels.app') \
+    --param TENANT_NAME=$(cat system-seed.json | jq -r '.data.TENANT_NAME' | base64 -d) \
+    --param SYSTEM_DATABASE_USER=$(cat system-database.json | jq -r '.data.DB_USER' | base64 -d) \
+    --param SYSTEM_DATABASE_PASSWORD=$(cat system-database.json | jq -r '.data.DB_PASSWORD' | base64 -d) \
+    --param SYSTEM_DATABASE=$(cat system-database.json | jq -r '.data.URL' | base64 -d | cut -d '/' -f4) \
+    --param SYSTEM_DATABASE_ROOT_PASSWORD=$(cat system-database.json | jq -r '.data.URL' | base64 -d | awk -F '[:@]' '{print $3}') \
+    --param WILDCARD_DOMAIN=$(cat system-environment.json | jq -r '.data.THREESCALE_SUPERDOMAIN') \
+    --param SYSTEM_BACKEND_USERNAME=$(cat backend-internal-api.json | jq '.data.username' -r | base64 -d) \
+    --param SYSTEM_BACKEND_PASSWORD=$(cat backend-internal-api.json | jq '.data.password' -r | base64 -d) \
+    --param SYSTEM_BACKEND_SHARED_SECRET=$(cat system-events-hook.json | jq -r '.data.PASSWORD' | base64 -d) \
+    --param SYSTEM_APP_SECRET_KEY_BASE=$(cat system-app.json | jq -r '.data.SECRET_KEY_BASE' | base64 -d) \
+    --param ADMIN_PASSWORD=$(cat system-seed.json | jq -r '.data.ADMIN_PASSWORD' | base64 -d) \
+    --param ADMIN_USERNAME=$(cat system-seed.json | jq -r '.data.ADMIN_USER' | base64 -d) \
+    --param ADMIN_EMAIL=$(cat system-seed.json | jq -r '.data.ADMIN_EMAIL' | base64 -d) \
+    --param ADMIN_ACCESS_TOKEN=$(cat system-seed.json | jq -r '.data.ADMIN_ACCESS_TOKEN' | base64 -d) \
+    --param MASTER_NAME=$(cat system-seed.json | jq -r '.data.MASTER_DOMAIN' | base64 -d) \
+    --param MASTER_USER=$(cat system-seed.json | jq -r '.data.MASTER_USER' | base64 -d) \
+    --param MASTER_PASSWORD=$(cat system-seed.json | jq -r '.data.MASTER_PASSWORD' | base64 -d) \
+    --param MASTER_ACCESS_TOKEN=$(cat system-seed.json | jq -r '.data.MASTER_ACCESS_TOKEN' | base64 -d) \
+    --param RECAPTCHA_PUBLIC_KEY="$(cat system-recaptcha.json | jq -r '.data.PUBLIC_KEY' | base64 -d)" \
+    --param RECAPTCHA_PRIVATE_KEY="$(cat system-recaptcha.json | jq -r '.data.PRIVATE_KEY' | base64 -d)" \
+    --param SYSTEM_REDIS_URL=$(cat system-redis.json | jq -r '.data.URL' | base64 -d) \
+    --param SYSTEM_MESSAGE_BUS_REDIS_URL="$(cat system-redis.json | jq -r '.data.MESSAGE_BUS_URL' | base64 -d)" \
+    --param SYSTEM_REDIS_NAMESPACE="$(cat system-redis.json | jq -r '.data.NAMESPACE' | base64 -d)" \
+    --param SYSTEM_MESSAGE_BUS_REDIS_NAMESPACE="$(cat system-redis.json | jq -r '.data.MESSAGE_BUS_NAMESPACE' | base64 -d)" \
+    --param ZYNC_DATABASE_PASSWORD=$(cat zync.json | jq -r '.data.ZYNC_DATABASE_PASSWORD' | base64 -d) \
+    --param ZYNC_SECRET_KEY_BASE=$(cat zync.json | jq -r '.data.SECRET_KEY_BASE' | base64 -d) \
+    --param ZYNC_AUTHENTICATION_TOKEN=$(cat zync.json | jq -r '.data.ZYNC_AUTHENTICATION_TOKEN' | base64 -d) \
+    --param APICAST_ACCESS_TOKEN=$(cat system-master-apicast.json | jq -r '.data.ACCESS_TOKEN' | base64 -d) \
+    --param APICAST_MANAGEMENT_API=$(cat apicast-environment.json | jq -r '.data.APICAST_MANAGEMENT_API') \
+    --param APICAST_OPENSSL_VERIFY=$(cat apicast-environment.json | jq -r '.data.OPENSSL_VERIFY') \
+    --param APICAST_RESPONSE_CODES=$(cat apicast-environment.json | jq -r '.data.APICAST_RESPONSE_CODES') \
+    --param APICAST_REGISTRY_URL=$(cat system-environment.json | jq -r '.data.APICAST_REGISTRY_URL')
+----
+
+=== `Operator-based deployments`
+
+Restore secrets before creating APIManager resource.
+
+[source,bash]
+----
+oc apply -f system-smtp.json
+oc apply -f system-seed.json
+oc apply -f system-database.json
+oc apply -f backend-internal-api.json
+oc apply -f system-events-hook.json
+oc apply -f system-app.json
+oc apply -f system-recaptcha.json
+oc apply -f system-redis.json
+oc apply -f zync.json
+oc apply -f system-master-apicast.json
+----
+
+Restore configmaps before creating APIManager resource.
+
+[source,bash]
+----
+oc apply -f system-environment.json
+oc apply -f apicast-environment.json
+----
 
 === `system-mysql`
 
@@ -406,6 +497,29 @@ Re-deploy `system-redis` to reload the default configurations
 [source,bash]
 ----
 oc rollout latest dc/system-redis
+----
+
+=== `backend-worker`
+
+[source,bash]
+----
+oc rollout latest dc/backend-worker
+----
+
+=== `system-app`
+
+[source,bash]
+----
+oc rollout latest dc/system-app
+----
+
+=== `system-sidekiq`
+
+Resync domains
+
+[source,bash]
+----
+oc exec -t $(oc get pods -l 'deploymentConfig=system-sidekiq' -o json | jq '.items[0].metadata.name' -r)  bash -- -c "bundle exec rake zync:resync:domains"
 ----
 
 == Open Issues
