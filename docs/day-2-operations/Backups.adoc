@@ -198,7 +198,7 @@ Restore the archived files from a different location.
 
 [source,bash]
 ----
-oc rsync ./local/dir $(oc get pods -l 'deploymentConfig=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system --delete=true
+oc rsync ./local/dir/system/ $(oc get pods -l 'deploymentConfig=system-app' -o json | jq '.items[0].metadata.name' -r):/opt/system/public/system --delete=true
 ----
 
 
