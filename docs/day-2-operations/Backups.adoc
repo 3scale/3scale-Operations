@@ -170,10 +170,16 @@ oc get configmaps apicast-environment -o json --export > apicast-environment.jso
 
 === `Template-based deployment`
 
+Restore secrets before creating deploying template.
+
 [source,bash]
+----
+oc apply -f system-smtp.json
+----
 
 Template parameters will be read from copied secrets and configmaps.
 
+[source,bash]
 ----
 oc new-app --file /opt/amp/templates/amp.yml \
     --param APP_LABEL=$(cat system-environment.json | jq -r '.metadata.labels.app') \
