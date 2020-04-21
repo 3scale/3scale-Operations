@@ -147,23 +147,23 @@ oc cp $(oc get pods -l 'deploymentConfig=system-redis' -o json | jq '.items[0].m
 === `Secrets`
 [source,bash]
 ----
-oc get secrets system-smtp -o json --export > system-smtp.json
-oc get secrets system-seed -o json --export > system-seed.json
-oc get secrets system-database -o json --export > system-database.json
-oc get secrets backend-internal-api -o json --export > backend-internal-api.json
-oc get secrets system-events-hook -o json --export > system-events-hook.json
-oc get secrets system-app -o json --export > system-app.json
-oc get secrets system-recaptcha -o json --export > system-recaptcha.json
-oc get secrets system-redis -o json --export > system-redis.json
-oc get secrets zync -o json --export > zync.json
-oc get secrets system-master-apicast -o json --export > system-master-apicast.json
+oc get secrets system-smtp -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-smtp.json
+oc get secrets system-seed -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-seed.json
+oc get secrets system-database -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-database.json
+oc get secrets backend-internal-api -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > backend-internal-api.json
+oc get secrets system-events-hook -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-events-hook.json
+oc get secrets system-app -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-app.json
+oc get secrets system-recaptcha -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-recaptcha.json
+oc get secrets system-redis -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-redis.json
+oc get secrets zync -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > zync.json
+oc get secrets system-master-apicast -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-master-apicast.json
 ----
 
 === `ConfigMaps`
 [source,bash]
 ----
-oc get configmaps system-environment -o json --export > system-environment.json
-oc get configmaps apicast-environment -o json --export > apicast-environment.json
+oc get configmaps system-environment -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-environment.json
+oc get configmaps apicast-environment -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > apicast-environment.json
 ----
 
 == Restore Procedures
