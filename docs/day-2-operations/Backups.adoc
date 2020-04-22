@@ -157,6 +157,9 @@ oc get secrets system-recaptcha -o json --export | jq -r 'del(.metadata.ownerRef
 oc get secrets system-redis -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-redis.json
 oc get secrets zync -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > zync.json
 oc get secrets system-master-apicast -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-master-apicast.json
+oc get secrets backend-listener -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > backend-listener.json
+oc get secrets backend-redis -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > backend-redis.json
+oc get secrets system-memcache -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-memcache.json
 ----
 
 === `ConfigMaps`
@@ -164,6 +167,11 @@ oc get secrets system-master-apicast -o json --export | jq -r 'del(.metadata.own
 ----
 oc get configmaps system-environment -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system-environment.json
 oc get configmaps apicast-environment -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > apicast-environment.json
+oc get configmaps backend-environment -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > backend-environment.json
+oc get configmaps mysql-extra-conf -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > mysql-extra-conf.json
+oc get configmaps mysql-main-conf -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > mysql-main-conf.json
+oc get configmaps redis-config -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > redis-config.json
+oc get configmaps system -o json --export | jq -r 'del(.metadata.ownerReferences,.metadata.selfLink)' > system.json
 ----
 
 == Restore Procedures
@@ -233,6 +241,9 @@ oc apply -f system-recaptcha.json
 oc apply -f system-redis.json
 oc apply -f zync.json
 oc apply -f system-master-apicast.json
+oc apply -f backend-listener.json
+oc apply -f backend-redis.json
+oc apply -f system-memcache.json
 ----
 
 Restore configmaps before creating APIManager resource.
@@ -241,6 +252,11 @@ Restore configmaps before creating APIManager resource.
 ----
 oc apply -f system-environment.json
 oc apply -f apicast-environment.json
+oc apply -f backend-environment.json
+oc apply -f mysql-extra-conf.json
+oc apply -F mysql-main-conf.json
+oc apply -f redis-config.json
+oc apply -f system.json
 ----
 
 === `system-mysql`
