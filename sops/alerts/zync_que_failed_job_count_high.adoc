@@ -1,0 +1,19 @@
+:toc:
+:toc-placement!:
+
+= ThreescaleZyncQueFailedJobCountHigh
+
+toc::[]
+
+== Description
+
+* This alert will trigger if the number of `zync-que` **failed** jobs is greater than a given threshold
+* **Failed** jobs are the ones that failed at least once, did not run out of attempts to retry and therefore are scheduled for retry any time soon
+
+== Troubleshooting
+
+* Check the logs at `zync-que` pods to see the reason of the failures
+
+== Verification
+
+* Alert should disappear once the number of `zync-que` **failed** jobs is below the threshold

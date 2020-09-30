@@ -1,0 +1,19 @@
+:toc:
+:toc-placement!:
+
+= ThreescalePodCrashLooping
+
+toc::[]
+
+== Description
+
+* This alert will trigger if a pod is on `CrashLoop` state because one of the containers crashes and is restarted indefinitely
+
+== Troubleshooting
+
+* Check pod logs/events to see the reason of the `CrashLoop`
+* Check if maybe container resources requests/limits are too low and OOMKiller is acting (container trying to allocate more memory than permitted)
+
+== Verification
+
+* Alert should disappear once the pod is up and running
