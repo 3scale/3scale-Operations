@@ -1,0 +1,11 @@
+= SOPS (Standard Operating Procedures)
+
+For each alert defined, there should be some associated documentation that explains what the alert means, what the likely cause is and how to respond to the alert. These SOPs are essential to enabling an SRE team to effectively respond to alerts without needing direct input from an Engineering team. Without these, an SRE team will be aware that there is an ongoing problem, but will not have the necessary knowledge to deal with the problem.
+
+Common sections in a SOP may include:
+
+* Assumptions - how to validate that the alert is actually highlighting a problem, and what prerequisites might be required
+* Reference Articles - where to find additional information, or prior art for linked/similar issues
+* Corrective Process - what steps to take to resolve the issue
+* Success Indicators - how to know when the issue is resolved
+* Other Notes - any other relevant information

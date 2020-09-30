@@ -1,0 +1,23 @@
+:toc:
+:toc-placement!:
+
+= ThreescaleZyncQueScheduledJobCountHigh
+
+toc::[]
+
+== Description
+
+* This alert will trigger if the number of `zync-que` **scheduled** jobs is greater than a given threshold
+* **Scheduled** jobs are the ones that are enqueued to be executed some time in the future, but not now (never failed, nor got expired)
+
+== Troubleshooting
+
+* Check if `zync-que` pods might be failing and the jobs are not being consumed at all from zync's postgres
+* Check if `zync-que` pods might not be consuming jobs at the required throughput:
+- You may need to consider scaling horinzontally `zync-que` deployment
+- You may need to consider increasing `zync-que` deployment resources requests/limits
+* Check if zync's postgres is having issues
+
+== Verification
+
+* Alert should disappear once the number of `zync-que` **scheduled** jobs is below the threshold

@@ -1,0 +1,22 @@
+:toc:
+:toc-placement!:
+
+= ThreescaleApicastRequestTime
+
+toc::[]
+
+== Description
+
+* This alert will trigger if there is a huge number of `apicast-staging`/`apicast-production` requests being processed slow (below a given threshold)
+* Request time metric includes only the time the request spent in apicast
+
+== Troubleshooting
+
+* Check if `apicast-staging`/`apicast-production` pods might not be able to deal with incoming traffic due to high CPU usage
+- You may need to consider scaling horinzontally `apicast-staging`/`apicast-production` deployment
+- You may need to consider increasing `apicast-staging`/`apicast-production` deployment resources requests/limits
+* Check if the current traffic is normal based on the historical data. An unexpected change in the traffic pattern can be legit, and will require scaling up, but it also can be due to an abnormal or malicious traffic
+
+== Verification
+
+* Alert should disappear once the number of `apicast-staging`/`apicast-production` slow requests are below the threshold

@@ -1,0 +1,20 @@
+:toc:
+:toc-placement!:
+
+= ThreescaleContainerWaiting
+
+toc::[]
+
+== Description
+
+* This alert will trigger if a container has been in `waiting` state for longer than 1 hour
+
+== Troubleshooting
+
+* Check if maybe container image registry is not reachable
+
+== Verification
+
+* Alert should disappear once container is up and running
+
+

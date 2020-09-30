@@ -1,0 +1,20 @@
+:toc:
+:toc-placement!:
+
+= ThreescaleContainerCPUHigh
+
+toc::[]
+
+== Description
+
+* This alert will trigger if the cpu usage is being very high
+
+== Troubleshooting
+
+* Check if CPU resources requests/limits are properly set and appropriate to the historical usage data. If the real usage tends to surpass the requested threshold, you may need to increase the container resources
+* Check if maybe you need to scale horizontally the associated deployment with more pods (if possible) to distribute the load
+- Some deployments **cannot** be scaled horizontally: `backend-cron` and any db (`backend-redis`,`system-redis`, `system-mysql`, `system-memcache`, `system-sphinx`, `zync-database`)
+
+== Verification
+
+* Alert should disappear once CPU usage decreases below the threshold

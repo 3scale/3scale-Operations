@@ -1,0 +1,18 @@
+:toc:
+:toc-placement!:
+
+= ThreescalePodNotReady
+
+toc::[]
+
+== Description
+
+* This alert will trigger if a pod is **not** on `Ready` state
+
+== Troubleshooting
+
+* Execute a describe pod command to check the pod status 
+
+== Verification
+
+* Alert should disappear once pod passes the readiness probe
