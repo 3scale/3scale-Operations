@@ -1,0 +1,20 @@
+:toc:
+:toc-placement!:
+
+= ThreescaleApicastWorkerRestart
+
+toc::[]
+
+== Description
+
+* This alert will trigger if one of the nginx-worker restarted for any reason
+
+== Troubleshooting
+
+* Check why the worker died in the APIcast logs; the usual reasons are:
+- Pod hits the memory limits and one of the worker processes was killed. Check why the limits were reached, and if it's needed, increase them
+- Node is out of memory, so try to kill containers to schedule to another node
+
+== Verification
+
+* Check that the worker died metric does not increase and memory is under the limits.
