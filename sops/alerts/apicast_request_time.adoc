@@ -13,7 +13,7 @@ toc::[]
 == Troubleshooting
 
 * Check if `apicast-staging`/`apicast-production` pods might not be able to deal with incoming traffic due to high CPU usage
-- You may need to consider scaling horinzontally `apicast-staging`/`apicast-production` deployment
+- You may need to consider scaling horizontally `apicast-staging`/`apicast-production` deployment
 - You may need to consider increasing `apicast-staging`/`apicast-production` deployment resources requests/limits
 * Check if the current traffic is normal based on the historical data. An unexpected change in the traffic pattern can be legit, and will require scaling up, but it also can be due to an abnormal or malicious traffic
 
