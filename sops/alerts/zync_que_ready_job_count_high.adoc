@@ -14,7 +14,7 @@ toc::[]
 
 * Check if `zync-que` pods might be failing and the jobs are not being consumed at all from zync's postgres
 * Check if `zync-que` pods might not be consuming jobs at the required throughput:
-- You may need to consider scaling horinzontally `zync-que` deployment
+- You may need to consider scaling horizontally `zync-que` deployment
 - You may need to consider increasing `zync-que` deployment resources requests/limits
 * Check if zync's postgres is having issues
 

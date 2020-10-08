@@ -13,7 +13,7 @@ toc::[]
 
 * Check if `backend-worker` pods might be failing and the jobs are not being consumed at all from backend's redis
 * Check if `backend-worker` pods might not be consuming jobs at the required throughput:
-- You may need to consider scaling horinzontally `backend-worker` deployment
+- You may need to consider scaling horizontally `backend-worker` deployment
 - You may need to consider increasing `backend-worker` deployment resources requests/limits
 * Check if the current traffic in `backend-listener` is normal based on the historical data. An unexpected change in the traffic pattern can be legit, and will require scaling up, but it also can be due to an abnormal or malicious traffic. Whatever the reason, increased traffic in `backend-listener` generates more jobs for `backend-worker` to process from backend's redis
 * Check if backend's redis is having issues

@@ -13,7 +13,7 @@ toc::[]
 
 * Check if `zync` pods might be failing
 * Check if `zync` pods might not be able to deal with incoming traffic due to high CPU usage
-- You may need to consider scaling horinzontally `zync` deployment
+- You may need to consider scaling horizontally `zync` deployment
 - You may need to consider increasing `zync` deployment resources requests/limits
 * Check if zync's postgres database is having issues
 
