@@ -541,7 +541,7 @@ Resync domains
 
 [source,bash]
 ----
-oc exec -t $(oc get pods -l 'deploymentConfig=system-sidekiq' -o json | jq '.items[0].metadata.name' -r)  bash -- -c "bundle exec rake zync:resync:domains"
+oc exec -t $(oc get pods -l 'deploymentConfig=system-sidekiq' -o json | jq '.items[0].metadata.name' -r) -- bash -c "bundle exec rake zync:resync:domains"
 ----
 
 == Open Issues
