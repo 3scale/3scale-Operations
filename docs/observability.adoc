@@ -1,0 +1,27 @@
+:toc:
+:toc-placement!:
+
+= Observability
+
+toc::[]
+
+== Application metrics
+
+=== Monitoring
+
+* From 3scale `v2.9`, link:https://github.com/3scale/3scale-operator[3scale Operator] creates `PrometheusRule` objects in order to add some useful prometheus alerts based on 3scale builtin application metrics, but also on kube-state-metrics and cAdvisor (kubelet) metrics (cpu, memory, pod availability...)
+
+* You can check current SOP alerts at link:../sops/alerts[sops/alerts] directory
+
+=== Dashboards
+
+* From 3scale `v2.9`, link:https://github.com/3scale/3scale-operator[3scale Operator] creates `GrafanaDashboard` objects with grafana dashboards of different 3scale components (backend, zync, apicast, system...) and also a couple of generic dashboards with kubernetes resources usage by pod and namespace where the 3scale instance is deployed
+
+== Databases metrics
+
+* 3scale uses different databases (different redis, mysql, postgresql, memcached, sphinx), so if there is any issue on a database it might have a huge impact on 3scale performance and availability
+* For this reason, it is recommended to setup monitoring on 3scale databases, along with some prometheus alerts, and also grafana dashboards to easily check internal database metrics
+* You can use link:https://github.com/3scale-ops/prometheus-exporter-operator[Prometheus Exporter Operator] in order to monitor:
+- 3scale databases internal metrics (including alerts and grafana dashboards): redis, mysql, postgresql, memcached, sphinx
+- HTTP monitoring (latency, availability, TLS/SSL certificate expiration...) of any 3scale HTTP endpoint
+- And in case of databases deployed in AWS: monitor AWS Cloudwatch metrics from any AWS service (like AWS RDS or AWS ElastiCache... ). Some metrics like CPU or disk space metrics can not be extracted from redis/mysql exporter, so cloudwatch exporter is required

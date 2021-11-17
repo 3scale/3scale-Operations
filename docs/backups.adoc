@@ -1,6 +1,18 @@
+:toc:
+:toc-placement!:
+
 = Backup & Restore
 
-== Overview
+image:https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Warning.svg/156px-Warning.svg.png[]
+
+* *It is recommended to use link:ha_dbs.adoc[external databases]* instead of using the internal databases that are installed by default
+* For an easier backup/restore management when using external databases on public cloud providers,  the recommendation is to setup automated backups using the public cloud provider's integrated backup solution (like for example AWS RDS and its automated daily snapshots with PITR), if available
+* If using the internal databases, backup and restore can be done using the link:https://github.com/3scale/3scale-operator[3scale Operator] by following these link:https://github.com/3scale/3scale-operator/blob/master/doc/operator-backup-and-restore.md#3scale-installation-backup-and-restore-using-the-operator[instructions]
+* *However, if for any reason you don't want to use the link:https://github.com/3scale/3scale-operator[3scale Operator] to manage backup/restore of internal databases, in the following sections you can find the deprecated way of doing manual backup and restore. This is not recommended, use at you own risk*
+
+== Manual Backup & Restore [Deprecated]
+
+toc::[]
 
 This section provides an Operator of a 3scale installation the information they need for:
 
