@@ -1,0 +1,4 @@
+= Highly-Availability
+
+* link:ha_3scale.adoc[3scale HA on different scenarios]
+* link:ha_dbs.adoc[3scale HA with external databases]

@@ -1,0 +1,72 @@
+= 3scale HA external databases
+
+*Using external databases is the recommended 3scale setup* (avoding the internal databases created by the 3scale Operator by default).
+
+You can choose between different options when setting up the databases in high-avalability. One of the first questions that you need to ask yourself is whether you want to deploy them on-premises or if you would like to use a managed service provided by a cloud provider:
+
+* Some users might be required by law to have everything on-premises
+* For users who are not, and are already using services provided by for example Amazon Web Services (AWS), using their managed services also for the 3scale databases might be the most convenient option (making easier the database operation, management, backup, restore...)
+
+In order to set up HA for the 3scale databases, you need to tell the operator that internal databases won't be used (so won't be created in OpenShift), which applies to:
+
+* *Backend* and the *System* Redis databases
+* Relational database used by *System*
+* And starting from 3scale v2.10, also *Zync* database
+
+To do so, follow link:https://github.com/3scale/3scale-operator/blob/3scale-2.10-stable/doc/operator-user-guide.md#external-databases-installation[these instructions], these are the required APIManager spec fields to tell the operator to work with external databases:
+```yaml
+apiVersion: apps.3scale.net/v1alpha1
+kind: APIManager
+metadata:
+  name: example-apimanager
+spec:
+  highAvailability:
+    enabled: true  # backend redis, system redis, system database external databases
+    externalZyncDatabaseEnabled: true   # zync external database
+```
+Then you need to configure *manually* their associated URLs for the database connections strings on the following secrets:
+
+* backend-redis
+* system-database
+* system-redis
+* zync
+
+== Backend Redis and System Redis databases
+
+Redis offers replication. You need to set up multiple instances of Redis. One of them will be the leader and the others the replicas. Writes go to the leader and are propagated to the replicas. When the leader fails, a replica becomes the new leader. When the old leader comes back online it will become a replica of the new leader.
+
+In Redis, the replication mechanism is asynchronous. This means that when something is written to the leader, Redis answers to the client without waiting for the writes to be effective in the replicas. This is fast, but when there is a failover, you will lose the data that has not been replicated yet.
+
+In the case of Backend, that trade-off makes sense. In the event of a failover, *Backend* might lose some reports. This means that some rate-limits could not be accurate and you could let more calls than configured for a brief period of time. Also, some statistics might not be exact. This is a trade-off that makes sense in the case of *Backend*. It needs to be fast because it is called on every API call (unless there's some auth caching policy enabled in APIcast), and failovers should be pretty rare, plus the amount of data not in the replicas should be pretty low. Aside from that, the *Backend* database contains some information synchronized from *System* that could also be lost, but that can always be recovered by executing a rake task from System.
+
+Here are some options available to use as the *Backend* and *System* Redis:
+
+* link:https://redis.io/topics/sentinel[Redis with sentinels]
+- This is the option you need to choose if you want to deploy everything on-premises
+* link:https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/WhatIs.html[AWS ElastiCache]
+- Check the link:https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Replication.Redis.Groups.html[docs]
+- It is link:https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/AutoFailover.html[Multi-AZ]
+- It also supports link:https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/Redis-Global-Datastore.html[Multi-region using the "Global Datastore" feature]. Keep in mind that in the multi-region case failovers are not automatic
+* link:https://redislabs.com/redis-enterprise-software/overview/[Redis Enterprise]
+- Check the link:https://redislabs.com/redis-enterprise/technology/highly-available-redis/[docs]
+- It's multi-AZ, and can also be configured in link:https://redislabs.com/redis-enterprise/technology/active-passive-geo-distribution/[Multiple regions]
+
+Here are some considerations:
+
+* When choosing and configuring any of those or other options, keep in mind that *Backend* does not support the link:https://redis.io/topics/cluster-tutorial[Redis Cluster mode] (which has nothing to do with usual HA with master and slaves)
+* In the case of *Backend*, you can deploy its databases (storage and queues) in a single Redis instance using two different database indexes(typically `db0` and `db1`), but you can also use two different redis instances if the option that you choose does not support this, or if you prefer to have both usages (storage and queues) on separate instances
+* Take into account that using the same Redis instance both for *Backend* and *System* is not supported
+
+== System and Zync databases
+
+Here are some options for the relational database used by *System* and *Zync*. Keep in mind that they need to be two separate databases:
+
+* link:https://www.crunchydata.com/[Crunchy]
+- Read more about it link:https://access.crunchydata.com/documentation/postgres-operator/4.6.1/architecture/high-availability/multi-cluster-kubernetes/[here]
+and link:https://access.crunchydata.com/documentation/postgres-operator/4.6.1/advanced/multi-zone-design-considerations/[here]
+- It can be deployed using a Kubernetes operator
+- By default, the replication is asynchronous, but it can be link:https://access.crunchydata.com/documentation/postgres-operator/4.6.1/architecture/high-availability/[configured to be synchronous]
+- It can be configured to be multi-cluster, but in that case, the failover is not automatic. Also, the replication in that scenario is synchronous and uses S3 as an intermediate storage
+* link:https://aws.amazon.com/es/rds/ha/[AWS RDS]
+- The replication is synchronous
+- It supports link:https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.XRgn.html[Multi-AZ and Multi-region replicas]. Keep in mind that in the multi-region case failovers are not automatic
