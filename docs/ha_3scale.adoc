@@ -135,6 +135,8 @@ The following configuration items need to be used in any 3scale installations th
 
 === Active-Passive clusters on the same region with shared databases
 
+image::../images/3scale-ha-active-passive-same-region-shared-databases.png[Active Passive same region shared databases.png]
+
 This setup consists of having 2 clusters (or more) in the *same region* and deploying 3scale in *active-passive* mode. One of the clusters will be the *active* (receiving traffic), whereas the other/s will be in standby mode without receiving traffic (*passive*), but prepared to assume the *active* role in case there is a failure in the *active* cluster.
 
 In this installation option, given that only a single region is used, databases will be shared among all clusters.
@@ -186,6 +188,8 @@ spec:
 . From this moment, the old *passive* cluster will start to receive traffic, and it becomes the new *active* one
 
 === Active-Passive clusters on different regions with synced databases
+
+image::../images/3scale-ha-active-passive-different-region-synced-databases.png[Active Passive different region synced databases.png]
 
 This setup consists of having two clusters (or more) in *different regions* and deploying 3scale in *active-passive* mode. One of the clusters will be the *active* one (receiving traffic), whereas the other will be in standby mode without receiving traffic (*passive*) but prepared to assume the *active* role in case there is a failure in the *active* cluster.
 
