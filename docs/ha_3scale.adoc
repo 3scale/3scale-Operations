@@ -218,3 +218,66 @@ In this setup, to ensure good database access latency, each cluster will have it
 .. AWS RDS: *System* and *Zync*
 .. AWS ElastiCaches: *Backend* and *System*
 . Execute step 4 and 5 from <<manual-failover-shared-databases>>
+
+=== Active-Active clusters (not supported)
+
+Having an application working on *active/active* configuration is always difficult for any application:
+
+- *Soft Databases limitation*: it is complex but can be achieved with some trade offs, but it is mainly responsibility from the administrator (not 3scale responsibility)
+- *Hard Application limitation*: this one is a hard limitation imposed by how 3scale manages OpenShift Routes and cannot be achieved
+
+==== Soft Databases limitation (out of 3scale scope)
+
+One of the most difficult parts for any application deployed on *active*/*active* (not only 3scale), is having databases on *active*/*active* mode, and in case of 3scale there are many different databases involved which would require different *active*/*active* implementations for each of them:
+
+- System-mysql (or system-postgres or system-oracle, you can choose)
+- System-redis
+- Backend-redis
+- Zync-database (postgresql)
+- system-sphinx (doesn't need HA)
+- system-memcached (doesn't need HA)
+
+So, from 3scale point of view, an administrator need to ensure that database connection strings configured in 3scale APIManager custom resource on any OCP cluster will be always a master instance (allowing write operations).
+
+____
+*NOTE*
+
+*This database limitation is a soft limitation because although being very complex (implementing active/active for mysql, postgresql or redis is not trivial), it can be achieved.*
+____
+
+==== Hard Application limitation: OpenShift Routes
+
+The main reason why *active*/*active* can not be achieved, even with *active*/*active* databases, is *System* dev/admin portals and *Apicasts* OpenShift Routes. They are  managed by the *Zync* component and they need to be the exactly the same on all OCP clusters.
+
+This is an example flow since a client wants a *System* new dev portal and incoming traffic can eventually reach system-app pods thanks to a newly created OpenShift Route:
+
+. System-app receives the request from UI/API to create a dev/admin portal or apicast OpenShift  Route
+. System-app enqueues the background job to create those OpenShift Routes into system-redis
+. System-sidekiq takes the job from system-redis, process it and contacts with zync API (zync deployment)
+. Zync API (zync deployment) creates a background job into zync-database (postgres)
+. Zync-que takes the route-creation-job from zync-database (postgres) and create the final OpenShift  Routes into the cluster that proccessed that job
+
+When having N clusters, imagine Cluster-A and Cluster-B, any of them can receive traffic managed by either Cluster-A-system-app or Cluster-B-system-app, so they will enqueue the job into its own database, and would follow the whole procedure:
+
+```
+System-app -> system-redis -> system-sidekiq -> zync (api) -> zync-database -> zync-que -> OpenShift Routes creation
+```
+
+And finally, the OpenShift Routes will be created *only* into the cluster that processed the route-creation-job (not on both OCP clusters), so incoming traffic managed by OpenShift Router will work only on one cluster (the one with the needed OpenShift Routes), so not having *active*/*active*.
+
+____
+*NOTE*
+
+*This application limitation is a hard limitation because the first worker that fetches the job, will create the OpenShift Route on the cluster it's running. So, each cluster will have a subset of OpenShift Routes.*
+____
+
+=== Active independent clusters
+
+A few customers wanting *active*/*active*, as it can not be achieved within the same 3scale instance due to the hard limitation imposed by the OpenShift Routes created by *Zync*, what they have done is to deploy 3scale independent instances on different OCP clusters, where every 3scale instance has its own databases, which are not shared and not synced between them.
+
+Here you can find some considerations:
+
+- Each 3scale independent instance will need its own High Availability configuration
+- You need to manage the 3scale configuration with a shared CI/CD, to ensure that any independent 3scale instance will have exactly the same configuration
+- You need a kind of Global Load Balancer (maybe done at DNS level above all OCP clusters), to ensure that the same % of traffic goes to every independent 3scale instance on its OCP cluster (maybe using round-robin policy)
+- The rate limit will be independent for every 3scale instance, so if for example you have 2 3scale independent instances, and want a global rate limit of 100 requests/minute, you will need to configure a rate limit of 50 requests/minute on each 3scale instance, and in case of having round-robin DNS policy on the Global Load Balancer, *theoretically* you will achieve the supposed global 100 requests/minute rate limit
