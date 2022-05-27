@@ -277,7 +277,10 @@ A few customers wanting *active*/*active*, as it can not be achieved within the 
 
 Here you can find some considerations:
 
-- Each 3scale independent instance will need its own High Availability configuration
-- You need to manage the 3scale configuration with a shared CI/CD, to ensure that any independent 3scale instance will have exactly the same configuration
-- You need a kind of Global Load Balancer (maybe done at DNS level above all OCP clusters), to ensure that the same % of traffic goes to every independent 3scale instance on its OCP cluster (maybe using round-robin policy)
-- The rate limit will be independent for every 3scale instance, so if for example you have 2 3scale independent instances, and want a global rate limit of 100 requests/minute, you will need to configure a rate limit of 50 requests/minute on each 3scale instance, and in case of having round-robin DNS policy on the Global Load Balancer, *theoretically* you will achieve the supposed global 100 requests/minute rate limit
+- Each 3scale independent instance over multiple clusters will need its own High Availability configuration with their own databases, which are not shared between 3scale instances
+- All 3scale independent instances over multiple clusters *will use the same shared `wildcardDomain`*
+- You need to manage the 3scale configuration with a shared CI/CD, to ensure that any independent 3scale instance will have exactly the same configuration (so no configuration drifts between 3scale instances)
+- You need a kind of Smart Global Load Balancer (maybe done at DNS level) above all OCP clusters, to ensure that the same % of traffic goes to every independent 3scale instance on its OCP cluster (maybe using round-robin policy)
+- The rate limit will be independent for every 3scale instance, so if for example you have 2 3scale independent instances, and want a global rate limit of 100 requests/minute, you will need to configure a rate limit of 50 requests/minute on each 3scale instance, and in case of having round-robin DNS policy on the Global Load Balancer, *theoretically* you will achieve the supposed global rate limit of 100 requests/minute
+
+With this approach of 3scale independent instances, there might arise possible issues that are unknown at the time of writing this documentation.
