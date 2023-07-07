@@ -7,15 +7,30 @@ toc::[]
 
 == Application metrics
 
-=== Monitoring
+You can link:https://github.com/3scale/3scale-operator/blob/master/doc/operator-monitoring-resources.md#enabling-3scale-monitoring[enable 3scale monitoring] configuring the following APIManager spec fields:
 
-* From 3scale `v2.9`, link:https://github.com/3scale/3scale-operator[3scale Operator] creates `PrometheusRule` objects in order to add some useful prometheus alerts based on 3scale builtin application metrics, but also on kube-state-metrics and cAdvisor (kubelet) metrics (cpu, memory, pod availability...)
+```yaml
+apiVersion: apps.3scale.net/v1alpha1
+kind: APIManager
+metadata:
+  name: example-apimanager
+spec:
+  monitoring:
+    enabled: true  # Mandatory, deploys PodMonitors, GrafanaDashboards and PrometheusRules
+    enablePrometheusRules: false # Optional, not deploy PrometheusRules
+```
 
-* You can check current SOP alerts at link:../sops/alerts[sops/alerts] directory
+link:https://github.com/3scale/3scale-operator[3scale Operator] will:
 
-=== Dashboards
-
-* From 3scale `v2.9`, link:https://github.com/3scale/3scale-operator[3scale Operator] creates `GrafanaDashboard` objects with grafana dashboards of different 3scale components (backend, zync, apicast, system...) and also a couple of generic dashboards with kubernetes resources usage by pod and namespace where the 3scale instance is deployed
+* Create a *PodMonitor* custom resource for every DeployConfig, so prometheus-operator knows how to scrape metrics from every pod
+* Create a *GrafanaDashboard* custom resource for every 3scale component:
+- There are dasboards for every 3scale component: Backend, System, Zync, Apicast, Apicast Services
+- In addition, there are a couple of generic dashboards with kubernetes resources usage by pod and namespace where the 3scale instance is deployed
+* Create a *PrometheusRule* custom resource for every 3scale component:
+- You can check default alerts at link:https://github.com/3scale/3scale-operator/tree/master/doc/prometheusrules[3scale Operator repository]
+- As alerts management can be very customizable, to not force anyone using them, they can be disabled from operator management by adding the optional field `enablePrometheusRules: false`
+- Having access to default PrometheusRules custom resources, you can deploy manually the ones you prefer by link:https://github.com/3scale/3scale-operator/tree/master/doc/prometheusrules#tune-the-prometheus-rules-based-on-your-infraestructure[tunning them to your own needs] (updating severity, time duration, thresholds...)
+- Bear in mind that every default PrometheusRule has a linked SOP (Standard Operating Procedures) on an annotation, you can check current SOP alerts at link:../sops/alerts[sops/alerts] directory
 
 == Databases metrics
 
