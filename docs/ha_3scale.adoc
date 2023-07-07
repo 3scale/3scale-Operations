@@ -7,9 +7,9 @@ toc::[]
 
 == Highly available 3scale-operator based installation
 
-This section explains how to install 3scale using the link:https://github.com/3scale/3scale-operator[3scale Operator] and how to configure it to have a highly-available deployment. If you haven't done so, you need to install the 3scale-operator following link:https://github.com/3scale/3scale-operator/blob/3scale-2.10-stable/doc/operator-user-guide.md#installing-3scale[this guide] before proceeding.
+This section explains how to install 3scale using the link:https://github.com/3scale/3scale-operator[3scale Operator] and how to configure it to have a highly-available deployment. If you haven't done so, you need to install the 3scale-operator following link:https://github.com/3scale/3scale-operator/blob/master/doc/operator-user-guide.md#installing-3scale[this guide] before proceeding.
 
-As usual, to install 3scale using the 3scale-operator, an APIManager custom resource is used (see a simple example link:https://github.com/3scale/3scale-operator/blob/3scale-2.10-stable/doc/operator-user-guide.md#basic-installation[here]), but several changes need to be made to ensure a highly-available installation. The following sections delve into each of the changes required.
+As usual, to install 3scale using the 3scale-operator, an APIManager custom resource is used (see a simple example link:https://github.com/3scale/3scale-operator/blob/master/doc/operator-user-guide.md#basic-installation[here]), but several changes need to be made to ensure a highly-available installation. The following sections delve into each of the changes required.
 
 === External databases
 
@@ -82,7 +82,7 @@ In the following example, unlike in the previous one, a *hard podAntiAffinity* c
 
 Enabling Pod disruption budgets (PDBs) ensures that a minimum number of Pods will be available for each component. You can read more about PDBs in the link:https://kubernetes.io/docs/concepts/workloads/pods/disruptions/#pod-disruption-budgets[Kubernetes docs].
 
-Pod disruption budgets configuration is documented in link:https://github.com/3scale/3scale-operator/blob/3scale-2.10-stable/doc/operator-user-guide.md#enabling-pod-disruption-budgets[the user guide].
+Pod disruption budgets configuration is documented in link:https://github.com/3scale/3scale-operator/blob/master/doc/operator-user-guide.md#enabling-pod-disruption-budgets[the user guide].
 
 '''
 

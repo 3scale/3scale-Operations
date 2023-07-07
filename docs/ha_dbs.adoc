@@ -13,7 +13,7 @@ In order to set up HA for the 3scale databases, you need to tell the operator th
 * Relational database used by *System*
 * And starting from 3scale v2.10, also *Zync* database
 
-To do so, follow link:https://github.com/3scale/3scale-operator/blob/3scale-2.10-stable/doc/operator-user-guide.md#external-databases-installation[these instructions], these are the required APIManager spec fields to tell the operator to work with external databases:
+To do so, follow link:https://github.com/3scale/3scale-operator/blob/master/doc/operator-user-guide.md#external-databases-installation[these instructions], these are the required APIManager spec fields to tell the operator to work with external databases:
 ```yaml
 apiVersion: apps.3scale.net/v1alpha1
 kind: APIManager
